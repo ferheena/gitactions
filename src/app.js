@@ -1,5 +1,6 @@
-function sayHello() {
-return "Hello from GitHub Actions!";
+
+function greet() {
+    return "Hello from GitHub Actions!";
 }
 
-module.exports  = { sayHello};
+module.exports = { greet };

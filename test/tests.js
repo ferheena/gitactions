@@ -1,4 +1,4 @@
-const { sayHello} = require('../src/app');
+const { greet } = require('../src/app');
 
-console.log('Testing sayHello function:');
-console.log(sayHello());
+console.log('Running tests...');
+console.log('Test output:', greet());
