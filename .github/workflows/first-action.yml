@@ -1,25 +1,37 @@
-name: AWS Deploy Test
+name: Deploy Lambda Function
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  aws-deploy:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECERT_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Test AWS CLI
+      - name: Zip the function code
         run: |
-          aws sts get-caller-identity
-          aws s3 ls
+          cd src
+          zip -r ../function.zip app.js
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda create-function \
+            --function-name github-actions-demo \
+            --runtime nodejs16.x \
+            --handler app.handler \
+            --role ${{ secrets.AWS_LAMBDA_ROLE1 }} \
+            --zip-file fileb://function.zip \
+          || aws lambda update-function-code \
+            --function-name github-actions-demo \
+            --zip-file fileb://function.zip
